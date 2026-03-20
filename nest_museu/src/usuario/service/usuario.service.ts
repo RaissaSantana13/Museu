@@ -1,58 +1,50 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { USUARIO } from '../constants/usuario.constants';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Pageable } from '../../commons/pagination/pageable.response';
+import { Page } from '../../commons/pagination/pagination.system';
+import { fieldusuarios } from '../constants/usuario.constants';
 import { UsuarioConverter } from '../dto/converter/usuario.converter';
 import { UsuarioRequest } from '../dto/request/usuario.request';
 import { UsuarioResponse } from '../dto/response/usuario.response';
-import { TABELA_USUARIO } from './tabela.usuario';
+import { Usuario } from '../entities/usuario.entity';
 
 @Injectable()
 export class UsuarioService {
-  listar(): UsuarioResponse[] {
-    return UsuarioConverter.toListarUsuarioResponse(TABELA_USUARIO);
+  constructor(@InjectRepository(Usuario) private usuarioRepository: Repository<Usuario>) {}
+  async listar(
+    page: number,
+    pageSize: number,
+    field: string,
+    sort: 'ASC' | 'DESC',
+    search?: string,
+  ): Promise<Page<UsuarioResponse>> {
+    const pageable = new Pageable(page, pageSize, field, sort, fieldusuarios);
+    const offset = (page - 1) * pageSize;
+
+    const query = this.usuarioRepository
+      .createQueryBuilder('usuario')
+      .orderBy(`${field}`, sort)
+      .skip(offset)
+      .take(pageable.limit);
+    if (search) {
+      query.where(`${field} LIKE: search_pesquisa`, { search_pesquisa: `%{search}%` });
+    }
+    const [usuarios, totalElements] = await query.getManyAndCount();
+    const listaUsuarios = UsuarioConverter.toListarUsuarioResponse(usuarios);
+    return Page.of(listaUsuarios, totalElements, pageable);
   }
 
   porId(id: number): UsuarioResponse | null {
-    const usuarioCadastrado = TABELA_USUARIO.find((usuario) => usuario.idUsuario === id);
-
-    if (!usuarioCadastrado) {
-      throw new NotFoundException(USUARIO.MENSAGEM.ENTIDADE_NAO_ENCONTRADA);
-    }
-    if (usuarioCadastrado) {
-      return UsuarioConverter.toUsuarioResponse(usuarioCadastrado);
-    }
-
     return null;
   }
-
-  salvar(usuarioRequest: UsuarioRequest): UsuarioResponse {
-    const id = TABELA_USUARIO.length + 1;
-    const usuario = UsuarioConverter.toUsuario(usuarioRequest);
-    usuario.idUsuario = id;
-    TABELA_USUARIO.push(usuario);
-
-    return UsuarioConverter.toUsuarioResponse(usuario);
+  salvar(usuarioRequest: UsuarioRequest): UsuarioResponse | null {
+    return null;
   }
-
   atualizar(id: number, usuarioRequest: UsuarioRequest) {
-    const usuarioCadastrado = TABELA_USUARIO.find((usuario) => usuario.idUsuario === id);
-    if (!usuarioCadastrado) {
-      throw new NotFoundException('usuario nao cadastrado no sistema');
-    }
-    const usuario = UsuarioConverter.toUsuario(usuarioRequest);
-    usuario.idUsuario = id;
-    Object.assign(usuarioCadastrado, usuario);
-    return UsuarioConverter.toUsuarioResponse(usuarioCadastrado);
+    return null;
   }
-
-  excluir(id: number): string | null {
-    const usuarioCadastrado = TABELA_USUARIO.findIndex((usuario) => usuario.idUsuario === id);
-    if (!usuarioCadastrado) {
-      throw new NotFoundException('usuario nao cadastrado no sistema');
-    }
-    TABELA_USUARIO.splice(usuarioCadastrado, 1);
-    if (usuarioCadastrado > -1) {
-      return 'Usuario excluido com sucesso';
-    }
+  apagar(id: number): string | null {
     return null;
   }
 }

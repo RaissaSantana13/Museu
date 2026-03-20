@@ -2,12 +2,19 @@ import { gerarMensagem, MENSAGEM_SISTEMA } from '../../commons/constants/mensage
 import { criarSwaggerOperacao } from '../../commons/constants/operacao.swagger';
 import { gerarRotasRecurso } from '../../commons/constants/url.sustema';
 
-const ENTITY_NAME = 'Usuario';
+const ENTITY_NAME = 'usuario';
 const ALIAS_NAME = 'Usuário';
 
 export const USUARIO = {
   ENTITY: ENTITY_NAME,
   ALIAS: ALIAS_NAME,
+  TABLE_FIELDS: {
+    ID_USUARIO: 'id_usuario',
+    NOME_USUARIO: 'nome_usuario',
+    EMAIL_USUARIO: 'emai_usuario',
+    SENHA_USUARIO: 'senha_usuario',
+    ATIVO: 'ativo',
+  },
   SWAGGER: {
     idUsuario: `Codigo do ${ENTITY_NAME} de identificacao unica`,
     nomeUsuario: `Nome do ${ENTITY_NAME} `,
@@ -30,3 +37,5 @@ function getMensagem(ENTITY: string) {
     ENTIDADE_LISTAGEM: gerarMensagem(MENSAGEM_SISTEMA.ENTIDADE_LISTAGEM, ENTITY),
   };
 }
+
+export const fieldusuarios = Object.values(USUARIO.TABLE_FIELDS);
