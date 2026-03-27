@@ -21,6 +21,7 @@ import { UsuarioService } from '../service/usuario.service';
 @Controller(USUARIO.ENTITY)
 export class UsuarioController {
   constructor(private readonly usuarioService: UsuarioService) {}
+
   @Get()
   @ApiListDoc(USUARIO.OPERACAO.LISTAR, UsuarioResponse)
   async listar(
@@ -31,17 +32,14 @@ export class UsuarioController {
     @Query('sort') sort?: 'ASC' | 'DESC',
     @Query('search') search?: string,
   ): Promise<ApiResponse<Page<UsuarioResponse>>> {
-    const pageController = page ? page : PAGINATION.PAGE;
-    const pageSizeController = pageSize ? pageSize : PAGINATION.PAGESIZE;
-    const fieldController = field ? field : USUARIO.TABLE_FIELDS.ID_USUARIO;
-    const sortController = sort ? sort : PAGINATION.ASC;
     const response = await this.usuarioService.listar(
-      pageController,
-      pageSizeController,
-      fieldController,
-      sortController,
+      page ?? PAGINATION.PAGE,
+      pageSize ?? PAGINATION.PAGESIZE,
+      field ?? USUARIO.TABLE_FIELDS.ID_USUARIO,
+      sort ?? PAGINATION.ASC,
       search,
     );
+
     return ResponseBuilder.status<Page<UsuarioResponse>>(HttpStatus.OK)
       .mensagem(USUARIO.MENSAGEM.ENTIDADE_LISTAGEM)
       .path(req.path)
@@ -49,10 +47,12 @@ export class UsuarioController {
       .dados(response)
       .build();
   }
+
   @Get(USUARIO.ROTA.ID)
   @ApiGetDoc(USUARIO.OPERACAO.PORID, UsuarioRequest, UsuarioResponse)
-  porId(@Param('id') id: number, @Req() req: Request) {
-    const response = this.usuarioService.porId(id);
+  async porId(@Param('id') id: number, @Req() req: Request): Promise<ApiResponse<UsuarioResponse>> {
+    const response = await this.usuarioService.porId(id);
+
     return ResponseBuilder.status<UsuarioResponse>(HttpStatus.OK)
       .mensagem(USUARIO.MENSAGEM.ENTIDADE_LOCALIZADA)
       .path(req.path)
@@ -60,10 +60,13 @@ export class UsuarioController {
       .dados(response)
       .build();
   }
+
   @Post()
   @ApiPostDoc(USUARIO.OPERACAO.SALVAR, UsuarioRequest, UsuarioResponse)
-  salvar(@Body() usuarioRequest: UsuarioRequest, @Req() req: Request) {
-    const response = this.usuarioService.salvar(usuarioRequest);
+  async salvar(@Body() usuarioRequest: UsuarioRequest, @Req() req: Request): Promise<ApiResponse<UsuarioResponse>> {
+    // ✅ CORREÇÃO: adicionando await
+    const response = await this.usuarioService.salvar(usuarioRequest);
+
     return ResponseBuilder.status<UsuarioResponse>(HttpStatus.OK)
       .mensagem(USUARIO.MENSAGEM.ENTIDADE_CADASTRADA)
       .path(req.path)
@@ -71,10 +74,16 @@ export class UsuarioController {
       .dados(response)
       .build();
   }
+
   @Put(USUARIO.ROTA.ID)
   @ApiPutDoc(USUARIO.OPERACAO.ATUALIZAR, UsuarioRequest, UsuarioResponse)
-  atualizar(@Param('id') id: number, @Body() usuarioRequest: UsuarioRequest, @Req() req: Request) {
-    const response = this.usuarioService.atualizar(id, usuarioRequest);
+  async atualizar(
+    @Param('id') id: number,
+    @Body() usuarioRequest: UsuarioRequest,
+    @Req() req: Request,
+  ): Promise<ApiResponse<UsuarioResponse>> {
+    const response = await this.usuarioService.atualizar(id, usuarioRequest);
+
     return ResponseBuilder.status<UsuarioResponse>(HttpStatus.OK)
       .mensagem(USUARIO.MENSAGEM.ENTIDADE_ALTERADA)
       .path(req.path)
@@ -82,9 +91,12 @@ export class UsuarioController {
       .dados(response)
       .build();
   }
+
   @Delete(USUARIO.ROTA.ID)
   @ApiDeleteDoc(USUARIO.OPERACAO.EXCLUIR)
-  deletar(@Param('id') id: number, @Req() req: Request) {
+  async deletar(@Param('id') id: number, @Req() req: Request) {
+    await this.usuarioService.excluir(id);
+
     return ResponseBuilder.status<UsuarioResponse>(HttpStatus.OK)
       .mensagem(USUARIO.MENSAGEM.ENTIDADE_EXCLUIDA)
       .path(req.path)
