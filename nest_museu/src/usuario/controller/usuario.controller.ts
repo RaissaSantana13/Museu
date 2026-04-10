@@ -64,7 +64,6 @@ export class UsuarioController {
   @Post()
   @ApiPostDoc(USUARIO.OPERACAO.SALVAR, UsuarioRequest, UsuarioResponse)
   async salvar(@Body() usuarioRequest: UsuarioRequest, @Req() req: Request): Promise<ApiResponse<UsuarioResponse>> {
-    // ✅ CORREÇÃO: adicionando await
     const response = await this.usuarioService.salvar(usuarioRequest);
 
     return ResponseBuilder.status<UsuarioResponse>(HttpStatus.OK)
