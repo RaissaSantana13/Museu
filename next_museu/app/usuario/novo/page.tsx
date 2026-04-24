@@ -1,4 +1,4 @@
-import SalvarUsuario from '../../../components/usuario/salvar-usuario';
+import SalvarUsuario from '../../../src/components/usuario/salvar-usuario';
 
 export default function UsuarioSalvar() {
   return (

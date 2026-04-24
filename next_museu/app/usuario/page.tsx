@@ -1,4 +1,4 @@
-import ListaUsuario from '../../components/usuario/lista-usuario';
+import ListaUsuario from '../../src/components/usuario/lista-usuario';
 
 export default function Usuario() {
   return (

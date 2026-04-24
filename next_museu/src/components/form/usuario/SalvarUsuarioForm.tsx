@@ -5,14 +5,15 @@ import { startTransition, useActionState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
+import { ApiResponse } from '../../../../type/api';
 import { salvarUsuarioAction } from '../../../actions/usuario/salvar-usuario-action';
 import { UsuarioCreate, UsuarioResponse, UsuarioSchema } from '../../../schema/usuario-schemas';
-import { ApiResponse } from '../../../type/api';
 import { Button } from '../../ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../../ui/card';
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '../../ui/field';
 import { Input } from '../../ui/input';
 
+// estado inicial
 const initState: ApiResponse<UsuarioResponse> = {
   status: 0,
   timestamp: '',
@@ -23,7 +24,11 @@ const initState: ApiResponse<UsuarioResponse> = {
   success: undefined,
 };
 
-export function SalvarUsuarioForm() {
+export function alterarUsuario() {}
+
+export function excluirUsuario() {}
+
+export default function SalvarUsuarioForm() {
   const [state, action, isPending] = useActionState(salvarUsuarioAction, initState);
   const form = useForm<z.infer<typeof UsuarioSchema>>({
     resolver: zodResolver(UsuarioSchema),

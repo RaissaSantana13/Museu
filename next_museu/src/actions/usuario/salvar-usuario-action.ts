@@ -1,6 +1,6 @@
+import { ApiResponse } from '../../../type/api';
 import { UsuarioCreate, UsuarioResponse } from '../../schema/usuario-schemas';
 import { UsuarioService } from '../../service/connection/usuarioService';
-import { ApiResponse } from '../../type/api';
 
 export function salvarUsuarioAction(
   prevState: ApiResponse<UsuarioResponse> | null,
@@ -9,7 +9,6 @@ export function salvarUsuarioAction(
     url: string;
   },
 ): Promise<ApiResponse<UsuarioResponse>> | null {
-  const dict = await getServerDictonary(); // i18n
   if (!payLoad.url) {
     return {
       status: 400,

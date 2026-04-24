@@ -1,6 +1,6 @@
 import { AxiosRequestConfig } from 'axios';
+import { ApiResponse, PageResponse, SearchParam } from '../../../type/api';
 import { http } from '../../lib/http';
-import { ApiResponse, PageResponse, SearchParam } from '../../type/api';
 
 export class ConnectionService<T, TCreate = T, TUpdate = T> {
   constructor(

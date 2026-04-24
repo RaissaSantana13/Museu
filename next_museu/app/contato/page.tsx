@@ -1,4 +1,4 @@
-import ListaContato from '../../components/contato/lista-contato';
+import ListaContato from '../../src/components/contato/lista-contato';
 
 export default function Home() {
   return (
